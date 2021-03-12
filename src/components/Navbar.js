@@ -21,7 +21,7 @@ const Title = styled.h1`
 
 const ThemeToggler = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   position: relative;
   cursor: pointer;
@@ -42,7 +42,6 @@ const ToggleBall = styled.div`
   border: 3px solid ${props => props.theme.borderColor};
   transition: ${props => props.theme.transitionTime}; 
 `;
-
 
 
 const Navbar = ({ setColorTheme }) => {

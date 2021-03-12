@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { ThemeProvider } from 'styled-components'
 import Navbar from './components/Navbar'
+import TrendingCoins from './components/TrendingCoins'
 // import Sidebar from './components/Sidebar'
 // import Chart from './components/Chart'
-// import TrendingCoins from './components/TrendingCoins'
 
 const LightTheme = {
   themeColor: 'light',
@@ -19,7 +19,7 @@ const DarkTheme = {
   themeColor: 'dark',
   pageBackground: '#37474f',
   titleColor: '#dee4e7',
-  borderColor: '#dee4e7',
+  borderColor: '#000',
   borderRadius: '5px',
   marginSpacing: '4px',
   transitionTime: 'all .5s ease',
@@ -37,8 +37,8 @@ function App() {
   return (
     <ThemeProvider theme={themes[colorTheme]}>
       <Navbar theme={colorTheme} setColorTheme={setColorTheme} />
-      {/* <TrendingCoins />
-      <div className='row'>
+      <TrendingCoins theme={colorTheme} />
+      {/* <div className='row'>
         <div className='ml-3 p-1 col-sm-3 col-md-3 col-lg-3 sidebar-col'>
           <Sidebar />
         </div>
