@@ -7,13 +7,14 @@ const CoinContainer = styled.div`
   padding: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  border: 3px solid green;
 `;
 
 const CoinImg = styled.img`
   height: 50px;
   width: 50px;
-  padding-right: 8px;
+  padding-left: 8px;
+  padding-right: 16px;
 `;
 
 const CoinLink = styled.a`

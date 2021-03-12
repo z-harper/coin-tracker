@@ -23,7 +23,10 @@ const Title = styled.h3`
   transition: ${props => props.theme.transitionTime}; 
 `;
 
-const TrendingContainer = styled.div`
+const CoinsGridContainer = styled.div`
+  border: 3px solid red;
+  width: 90%;
+  margin: auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   grid-gap: 3px;
@@ -37,21 +40,45 @@ const TrendingCoins = ({ theme }) => {
 
   const [coins, setCoins] = useState([]);
 
+  // add trending price and % change to each trending coin
+  const combineTrendingData = (coins, prices) => {
+    for (let i = 0; i < coins.length; i++) {
+      Object.keys(prices.data).forEach((key) => {
+        if (key === coins[i].item.id) {
+          coins[i].item.price = prices.data[key].usd;
+          coins[i].item.percentChange = prices.data[key].usd_24h_change;
+        }
+      })
+    }
+    return coins;
+  }
+
+
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios(trendingCoinsUrl);
-      setCoins(response.data.coins);
+    const fetchTopTrending = async () => {
+      // get trending coins
+      let response = await axios(trendingCoinsUrl);
+      const trendingCoins = response.data.coins;
+
+      // get the prices of those trending coins
+      let coinIDs = trendingCoins.map(coin => coin.item.id).join('%2C');
+      const coinPriceUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coinIDs}&vs_currencies=usd&include_24hr_change=true`;
+      const trendingPrices = await axios(coinPriceUrl);
+
+      // add trending price and % change to each trending coin
+      setCoins(combineTrendingData(trendingCoins, trendingPrices));
     };
-    fetchData();
+    fetchTopTrending();
   }, [])
+
 
   return (
     <Page>
       <Title>Top Trending Coins <small>(24hr)</small></Title>
-      <TrendingContainer>
-        {coins.length < 0 ? 'Loading...'
+      <CoinsGridContainer>
+        {coins.length < 1 ? 'Loading...'
           : coins.map((coin) => <CoinCard theme={theme} key={coin.item.id} coin={coin.item} />)}
-      </TrendingContainer>
+      </CoinsGridContainer>
     </Page>
   )
 }
