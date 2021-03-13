@@ -3,32 +3,60 @@ import styled from 'styled-components';
 
 
 const CoinContainer = styled.div`
+  padding-top: 4px;
+  border: 1px solid ${props => props.theme.borderColor};
+  border-radius: ${props => props.theme.borderRadius};
+`;
+
+const PriceData = styled.div`
   margin: 0;
   padding: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
   align-items: center;
-  border: 3px solid green;
 `;
 
 const CoinImg = styled.img`
   height: 50px;
   width: 50px;
-  padding-left: 8px;
-  padding-right: 16px;
+  padding-left: 4px;
 `;
 
 const CoinLink = styled.a`
-  text-decoration: none;
+  margin-left: 8px;
+  text-decoration: underline;
   border: none;
   outline: none;
   font-weight: bold;
+  font-size: 20px;
   color: ${props => props.theme.titleColor};
   transition: ${props => props.theme.transitionTime}; 
-
-  &:hover {
-    text-decoration: underline;
-  }
+  //border: 1px solid red;
 `;
+
+const CoinPrice = styled.div`
+  padding-left: 4px;
+  color: ${props => props.theme.titleColor};
+`;
+
+const CoinPercent = styled.div`
+  padding-left: 4px;
+  color: ${props => props.theme.titleColor};
+`;
+
+
+const formatPrice = (price) => {
+  let priceFormatted = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price)
+  return priceFormatted
+}
+
+const formatPercent = (percentChange) => {
+  if (percentChange > 0) {
+    return `${percentChange.toFixed(2)}% 🚀`;
+  } else {
+    return `${percentChange.toFixed(2)}% 🚑`;
+  }
+}
 
 
 const CoinCard = ({ theme, coin }) => {
@@ -41,7 +69,13 @@ const CoinCard = ({ theme, coin }) => {
 
   return (
     <CoinContainer>
-      <CoinImg src={coin.large} alt={coin.name} />
+      <PriceData>
+        <CoinImg src={coin.large} alt={coin.name} />
+        <div>
+          <CoinPrice>{formatPrice(coin.price)}</CoinPrice>
+          <CoinPercent>{formatPercent(coin.percentChange)}</CoinPercent>
+        </div>
+      </PriceData>
       <CoinLink href={createLink()} target='_blank' rel='noopener noreferrer'>{coin.symbol}</CoinLink>
     </CoinContainer>
   )
@@ -53,6 +87,8 @@ CoinCard.propTypes = {
     large: PropTypes.string.isRequired,
     score: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    percentChange: PropTypes.number.isRequired,
   }),
 }
 

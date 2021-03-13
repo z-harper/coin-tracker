@@ -3,10 +3,9 @@ import axios from 'axios';
 import styled from 'styled-components';
 import CoinCard from './CoinCard'
 
-const Page = styled.div`
+const TrendingContainer = styled.div`
   margin: 8px 4px 8px 4px;
   padding-bottom: 4px;
-  padding-left: 4px;
   background-color: ${props => props.theme.pageBackground};
   border: 3px solid ${props => props.theme.borderColor};
   border-radius: ${props => props.theme.borderRadius};
@@ -18,18 +17,15 @@ const Title = styled.h3`
   margin: 0;
   text-align: center;
   text-decoration: underline;
-  font-size: 24px;
+  font-size: 26px;
   color: ${props => props.theme.titleColor};
   transition: ${props => props.theme.transitionTime}; 
 `;
 
 const CoinsGridContainer = styled.div`
-  border: 3px solid red;
-  width: 90%;
-  margin: auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  grid-gap: 3px;
+  grid-gap: 6px;
 `;
 
 
@@ -73,13 +69,13 @@ const TrendingCoins = ({ theme }) => {
 
 
   return (
-    <Page>
+    <TrendingContainer>
       <Title>Top Trending Coins <small>(24hr)</small></Title>
       <CoinsGridContainer>
         {coins.length < 1 ? 'Loading...'
           : coins.map((coin) => <CoinCard theme={theme} key={coin.item.id} coin={coin.item} />)}
       </CoinsGridContainer>
-    </Page>
+    </TrendingContainer>
   )
 }
 

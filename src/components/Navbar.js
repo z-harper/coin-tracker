@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const Page = styled.div`
+const NavbarContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,14 +47,14 @@ const ToggleBall = styled.div`
 const Navbar = ({ setColorTheme }) => {
 
   return (
-    <Page>
+    <NavbarContainer>
       <Title>Coin Tracker</Title>
       <ThemeToggler>
         <span onClick={() => setColorTheme('dark')}>🌜</span>
         <span onClick={() => setColorTheme('light')}>🌞</span>
         <ToggleBall></ToggleBall>
       </ThemeToggler>
-    </Page>
+    </NavbarContainer>
   )
 }
 
