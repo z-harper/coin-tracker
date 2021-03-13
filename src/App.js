@@ -10,7 +10,7 @@ import Chart from './components/Chart';
 
 const ContentContainer = styled.div`
   display: grid;
-  grid-template-columns: minmax(200px, 1fr) 3fr;
+  grid-template-columns: minmax(250px, 1fr) 3fr;
   grid-gap: 6px;
   min-height: 400px;
   padding: 0;
@@ -59,9 +59,6 @@ function App() {
   const [searchableCoins, setSearchableCoins] = useState([]);
   // value clicked from dropdown
   const [coinsClicked, setCoinsClicked] = useState([]);
-  // user search in dropdown
-  const [userSearch, setUserSearch] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
 
   // get coin name and symbol from fetchSearchableCoins
   const extractSearchableCoinNames = (coinData) => {
@@ -109,22 +106,10 @@ function App() {
   }, [])
 
   const addCoin = (coin) => {
-    setCoinsClicked([...coinsClicked, coin])
-  }
-
-  const searchKeyword = (search) => {
-    setUserSearch(search);
-    if (userSearch !== '') {
-      const newCoinList = searchableCoins.filter(coin => {
-        return Object.values(coin)
-          .join(' ')
-          .toLowerCase()
-          .includes(search.toLowerCase());
-      })
-      setSearchResults(newCoinList);
-    } else {
-      setSearchResults(searchableCoins);
-    }
+    setCoinsClicked([...coinsClicked, coin]);
+    console.log(`coin added: ${coin.abbr}`);
+    // remove coin from searchable list
+    setSearchableCoins(searchableCoins.filter(prev => prev.id !== coin.id));
   }
 
 
@@ -134,10 +119,9 @@ function App() {
       <TrendingCoins theme={colorTheme} />
       <ContentContainer>
         <Sidebar
-          coins={searchResults.length < 1 ? searchableCoins : searchResults}
+          coins={searchableCoins}
           coinsClicked={coinsClicked}
           addCoin={addCoin}
-          searchKeyword={searchKeyword}
         />
         <Chart />
       </ContentContainer>
