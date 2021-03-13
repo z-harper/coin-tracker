@@ -54,14 +54,14 @@ const pageLimit = 100;
 function App() {
 
   // handles the color theme
-  const [colorTheme, setColorTheme] = useState('light')
+  const [colorTheme, setColorTheme] = useState('light');
   // searchable coins 
   const [searchableCoins, setSearchableCoins] = useState([]);
-  // user search term
-  const [userSearchTerm, setUserSearchTerm] = useState('');
-  // results from user search
-  const [userSearchResults, setUserSearchResults] = useState([]);
-
+  // value clicked from dropdown
+  const [coinsClicked, setCoinsClicked] = useState([]);
+  // user search in dropdown
+  const [userSearch, setUserSearch] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   // get coin name and symbol from fetchSearchableCoins
   const extractSearchableCoinNames = (coinData) => {
@@ -72,17 +72,26 @@ function App() {
       })
   }
 
+  // remove any duplicate coin id's
+  const removeDuplicateCoins = (arr, comp) => {
+    return arr
+      .map(e => e[comp])
+      .map((e, i, final) => final.indexOf(e) === i && i)
+      .filter(e => arr[e])
+      .map(e => arr[e]);
+  }
+
   // fetch a page of coins 
   const fetchCoinPage = async (pageNum) => {
     let url = searchableCoinsUrl + `?page=${pageNum}&limit=${pageLimit}`;
-    console.log(url);
+    //console.log(url);
     let response = await axios(url);
     return extractSearchableCoinNames(response.data.tickers);
   }
 
   // fetch all coins
   const fetchAllCoins = async (pageNum = 1) => {
-    console.log('retrieving data for page: ', pageNum);
+    //console.log('retrieving data for page: ', pageNum);
     const coins = await fetchCoinPage(pageNum);
     if (coins.length > 0) {
       return coins.concat(await fetchAllCoins(pageNum + 1));
@@ -94,48 +103,27 @@ function App() {
   useEffect(() => {
     const fetchSearchableCoins = async (pageNum = 1) => {
       let results = await fetchAllCoins();
-      console.log(results);
+      setSearchableCoins(removeDuplicateCoins(results, 'id'));
     };
     fetchSearchableCoins();
   }, [])
 
+  const addCoin = (coin) => {
+    setCoinsClicked([...coinsClicked, coin])
+  }
 
-
-
-
-  // // get coin name and symbol from fetchSearchableCoins
-  // const extractSearchableCoinNames = (coinData) => {
-  //   return coinData
-  //     .filter(coin => coin.target === 'USDT')
-  //     .map(coin => {
-  //       return { 'abbr': coin.base, 'id': coin.coin_id }
-  //     })
-  // }
-
-  // useEffect(() => {
-  //   const fetchSearchableCoins = async () => {
-  //     let response = await axios(searchableCoinsUrl);
-  //     setSearchableCoins(extractSearchableCoinNames(response.data.tickers));
-  //   };
-  //   // get searchable coins ~ 100
-  //   fetchSearchableCoins();
-  // }, [])
-
-
-  // search handler function for searching coins on sidebar
-  const searchHandler = (userInput) => {
-    setUserSearchTerm(userInput);
-
-    if (searchableCoins.length > 0 && userSearchTerm !== '') {
-      const newSearchList = searchableCoins.filter((coin) => {
+  const searchKeyword = (search) => {
+    setUserSearch(search);
+    if (userSearch !== '') {
+      const newCoinList = searchableCoins.filter(coin => {
         return Object.values(coin)
           .join(' ')
           .toLowerCase()
-          .includes(userInput.toLowerCase())
+          .includes(search.toLowerCase());
       })
-      setUserSearchResults(newSearchList);
+      setSearchResults(newCoinList);
     } else {
-      setUserSearchResults(searchableCoins);
+      setSearchResults(searchableCoins);
     }
   }
 
@@ -144,14 +132,15 @@ function App() {
     <ThemeProvider theme={themes[colorTheme]}>
       <Navbar theme={colorTheme} setColorTheme={setColorTheme} />
       <TrendingCoins theme={colorTheme} />
-      {/* <ContentContainer>
+      <ContentContainer>
         <Sidebar
-          userSearchResults={userSearchResults}
-          userSearchTerm={userSearchTerm}
-          searchHandler={searchHandler}
+          coins={searchResults.length < 1 ? searchableCoins : searchResults}
+          coinsClicked={coinsClicked}
+          addCoin={addCoin}
+          searchKeyword={searchKeyword}
         />
         <Chart />
-      </ContentContainer> */}
+      </ContentContainer>
     </ThemeProvider>
   );
 }
