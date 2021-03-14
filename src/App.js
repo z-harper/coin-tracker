@@ -84,7 +84,7 @@ function App() {
     let url = searchableCoinsUrl + `?page=${pageNum}&limit=${pageLimit}`;
     //console.log(url);
     let response = await axios(url);
-    //console.log(`response status for ${pageNum}: ${response.status}`)
+    console.log(`response status for ${pageNum}: ${response.status}`)
     return extractSearchableCoinNames(response.data.tickers);
   }
 
@@ -125,6 +125,14 @@ function App() {
     setSearchableCoins(searchableCoins.filter(prev => prev.id !== coin.id));
   }
 
+  // remove coin from sidebar display
+  const removeCoin = (coinID, coinAbbr) => {
+    // add coin back to searchable coins
+    setSearchableCoins([...searchableCoins, { abbr: coinAbbr, id: coinID }]);
+    // remove displayed coin from navbar
+    setCoinsClicked(coinsClicked.filter(prev => prev.id !== coinID));
+  }
+
 
   return (
     <ThemeProvider theme={themes[colorTheme]}>
@@ -135,6 +143,7 @@ function App() {
           coins={searchableCoins}
           coinsClicked={coinsClicked}
           addCoin={addCoin}
+          removeCoin={removeCoin}
         />
         <Chart />
       </ContentContainer>
