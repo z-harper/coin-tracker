@@ -51,6 +51,7 @@ const themes = {
 const searchableCoinsUrl = 'https://api.coingecko.com/api/v3/exchanges/binance/tickers';
 const pageLimit = 100;
 
+
 function App() {
 
   // handles the color theme
@@ -105,9 +106,17 @@ function App() {
     fetchSearchableCoins();
   }, [])
 
-  const addCoin = (coin) => {
+  // add coin to search bar list 
+  const addCoin = async (coin) => {
+    const addCoinUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coin.id}&vs_currencies=usd&include_24hr_change=true`
+    // make api call to get coin logo, current price, ... 
+    let response = await axios(addCoinUrl);
+    response = response.data;
+    // add price and percent change to coin
+    coin.price = response[coin.id].usd;
+    coin.percentChange = response[coin.id].usd_24h_change;
+    // add coin to sidebar
     setCoinsClicked([...coinsClicked, coin]);
-    console.log(`coin added: ${coin.abbr}`);
     // remove coin from searchable list
     setSearchableCoins(searchableCoins.filter(prev => prev.id !== coin.id));
   }

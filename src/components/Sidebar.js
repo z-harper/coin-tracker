@@ -66,6 +66,20 @@ const Sidebar = ({ coins, coinsClicked, addCoin }) => {
   // store user search
   const [userSearch, setUserSearch] = useState('');
 
+  // filter coins based on user search
+  const filter = (coins) => {
+    if (userSearch.length > 1) {
+      return coins.filter(coin => {
+        return Object.values(coin)
+          .join(' ')
+          .toLowerCase()
+          .includes(userSearch.toLowerCase());
+      })
+    } else {
+      return coins;
+    }
+  }
+
   // when escape key clicked, close dropdown menu, reset userSearch
   const closeMenu = (e) => {
     if (e.keyCode === 27) {
@@ -79,7 +93,6 @@ const Sidebar = ({ coins, coinsClicked, addCoin }) => {
     return () => document.removeEventListener('keydown', closeMenu);
   }, []);
 
-  console.log(userSearch);
 
   return (
     <SidebarContainer>
@@ -94,7 +107,7 @@ const Sidebar = ({ coins, coinsClicked, addCoin }) => {
           <DropdownArrow>{open ? '🔼' : '🔽'}</DropdownArrow>
         </DropdownControl>
         <DropdownOptions>
-          {open && coins.map(coin => {
+          {open && filter(coins).map(coin => {
             return (
               <Option
                 key={coin.id}
@@ -114,6 +127,7 @@ const Sidebar = ({ coins, coinsClicked, addCoin }) => {
         return (
           <div key={coin.id}>
             {coin.abbr}
+            <span>❌</span>
           </div>
         )
       })}
