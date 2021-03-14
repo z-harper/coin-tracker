@@ -84,6 +84,7 @@ function App() {
     let url = searchableCoinsUrl + `?page=${pageNum}&limit=${pageLimit}`;
     //console.log(url);
     let response = await axios(url);
+    //console.log(`response status for ${pageNum}: ${response.status}`)
     return extractSearchableCoinNames(response.data.tickers);
   }
 
@@ -108,13 +109,16 @@ function App() {
 
   // add coin to search bar list 
   const addCoin = async (coin) => {
-    const addCoinUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coin.id}&vs_currencies=usd&include_24hr_change=true`
+    //const addCoinUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coin.id}&vs_currencies=usd&include_24hr_change=true`
+    const addCoinUrl = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coin.id}&order=market_cap_desc&per_page=1&page=1&sparkline=false`
     // make api call to get coin logo, current price, ... 
     let response = await axios(addCoinUrl);
-    response = response.data;
+    response = response.data[0];
     // add price and percent change to coin
-    coin.price = response[coin.id].usd;
-    coin.percentChange = response[coin.id].usd_24h_change;
+    coin.price = response.current_price;
+    coin.percentChange = response.price_change_percentage_24h;
+    coin.image = response.image;
+
     // add coin to sidebar
     setCoinsClicked([...coinsClicked, coin]);
     // remove coin from searchable list
