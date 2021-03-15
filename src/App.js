@@ -60,6 +60,8 @@ function App() {
   const [searchableCoins, setSearchableCoins] = useState([]);
   // value clicked from dropdown
   const [coinsClicked, setCoinsClicked] = useState([]);
+  // current coin that is being charted
+  const [chartCoin, setChartCoin] = useState('');
 
   // get coin name and symbol from fetchSearchableCoins
   const extractSearchableCoinNames = (coinData) => {
@@ -131,6 +133,13 @@ function App() {
     setSearchableCoins([...searchableCoins, { abbr: coinAbbr, id: coinID }]);
     // remove displayed coin from navbar
     setCoinsClicked(coinsClicked.filter(prev => prev.id !== coinID));
+    // remove coin from chart
+    setChartCoin('');
+  }
+
+  // current coin that is to be charted from click in sidebar
+  const coinToChart = (coinID) => {
+    setChartCoin(coinID);
   }
 
 
@@ -144,8 +153,11 @@ function App() {
           coinsClicked={coinsClicked}
           addCoin={addCoin}
           removeCoin={removeCoin}
+          coinToChart={coinToChart}
         />
-        <Chart />
+        <Chart
+          chartCoin={chartCoin}
+        />
       </ContentContainer>
     </ThemeProvider>
   );
