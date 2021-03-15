@@ -10,7 +10,7 @@ import Chart from './components/Chart';
 
 const ContentContainer = styled.div`
   display: grid;
-  grid-template-columns: minmax(200px, 1fr) 3fr;
+  grid-template-columns: minmax(250px, 1fr) 3fr;
   grid-gap: 6px;
   min-height: 400px;
   padding: 0;
@@ -51,6 +51,7 @@ const themes = {
 const searchableCoinsUrl = 'https://api.coingecko.com/api/v3/exchanges/binance/tickers';
 const pageLimit = 100;
 
+
 function App() {
 
   // handles the color theme
@@ -59,9 +60,6 @@ function App() {
   const [searchableCoins, setSearchableCoins] = useState([]);
   // value clicked from dropdown
   const [coinsClicked, setCoinsClicked] = useState([]);
-  // user search in dropdown
-  const [userSearch, setUserSearch] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
 
   // get coin name and symbol from fetchSearchableCoins
   const extractSearchableCoinNames = (coinData) => {
@@ -86,6 +84,7 @@ function App() {
     let url = searchableCoinsUrl + `?page=${pageNum}&limit=${pageLimit}`;
     //console.log(url);
     let response = await axios(url);
+    console.log(`response status for ${pageNum}: ${response.status}`)
     return extractSearchableCoinNames(response.data.tickers);
   }
 
@@ -108,23 +107,30 @@ function App() {
     fetchSearchableCoins();
   }, [])
 
-  const addCoin = (coin) => {
-    setCoinsClicked([...coinsClicked, coin])
+  // add coin to search bar list 
+  const addCoin = async (coin) => {
+    //const addCoinUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coin.id}&vs_currencies=usd&include_24hr_change=true`
+    const addCoinUrl = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coin.id}&order=market_cap_desc&per_page=1&page=1&sparkline=false`
+    // make api call to get coin logo, current price, ... 
+    let response = await axios(addCoinUrl);
+    response = response.data[0];
+    // add price and percent change to coin
+    coin.price = response.current_price;
+    coin.percentChange = response.price_change_percentage_24h;
+    coin.image = response.image;
+
+    // add coin to sidebar
+    setCoinsClicked([...coinsClicked, coin]);
+    // remove coin from searchable list
+    setSearchableCoins(searchableCoins.filter(prev => prev.id !== coin.id));
   }
 
-  const searchKeyword = (search) => {
-    setUserSearch(search);
-    if (userSearch !== '') {
-      const newCoinList = searchableCoins.filter(coin => {
-        return Object.values(coin)
-          .join(' ')
-          .toLowerCase()
-          .includes(search.toLowerCase());
-      })
-      setSearchResults(newCoinList);
-    } else {
-      setSearchResults(searchableCoins);
-    }
+  // remove coin from sidebar display
+  const removeCoin = (coinID, coinAbbr) => {
+    // add coin back to searchable coins
+    setSearchableCoins([...searchableCoins, { abbr: coinAbbr, id: coinID }]);
+    // remove displayed coin from navbar
+    setCoinsClicked(coinsClicked.filter(prev => prev.id !== coinID));
   }
 
 
@@ -134,10 +140,10 @@ function App() {
       <TrendingCoins theme={colorTheme} />
       <ContentContainer>
         <Sidebar
-          coins={searchResults.length < 1 ? searchableCoins : searchResults}
+          coins={searchableCoins}
           coinsClicked={coinsClicked}
           addCoin={addCoin}
-          searchKeyword={searchKeyword}
+          removeCoin={removeCoin}
         />
         <Chart />
       </ContentContainer>
