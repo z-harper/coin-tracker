@@ -135,7 +135,9 @@ function App() {
     // remove displayed coin from navbar
     setCoinsClicked(coinsClicked.filter(prev => prev.id !== coinID));
     // remove coin from chart
-    setChartCoin('');
+    if (coinID === chartCoin) {
+      setChartCoin('');
+    }
   }
 
   // current coin that is to be charted from click in sidebar
