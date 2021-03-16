@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import TrendingCoins from './components/TrendingCoins';
 import Sidebar from './components/Sidebar';
 import Chart from './components/Chart';
+import Footer from './components/Footer';
 
 
 const ContentContainer = styled.div`
@@ -18,6 +19,7 @@ const ContentContainer = styled.div`
 
   @media screen and (max-width: 600px) {
     display: block;
+    min-height: auto;
   }
 `;
 
@@ -120,7 +122,6 @@ function App() {
     coin.price = response.current_price;
     coin.percentChange = response.price_change_percentage_24h;
     coin.image = response.image;
-
     // add coin to sidebar
     setCoinsClicked([...coinsClicked, coin]);
     // remove coin from searchable list
@@ -155,10 +156,9 @@ function App() {
           removeCoin={removeCoin}
           coinToChart={coinToChart}
         />
-        <Chart
-          chartCoin={chartCoin}
-        />
+        <Chart chartCoin={chartCoin} />
       </ContentContainer>
+      <Footer theme={colorTheme} setColorTheme={setColorTheme} />
     </ThemeProvider>
   );
 }

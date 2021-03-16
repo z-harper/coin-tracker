@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { CanvasJSChart } from 'canvasjs-react-charts';
-import { formatDate } from 'canvasjs-react-charts/canvasjs.min';
+
 
 const ChartContainer = styled.div`
   height: 100%;
@@ -13,6 +13,7 @@ const ChartContainer = styled.div`
 const Chart = ({ chartCoin }) => {
   // set state for candlestick data 
   const [candleData, setCandleData] = useState([]);
+  const [coinName, setCoinName] = useState('');
 
 
   const formatResponseData = (data) => {
@@ -35,6 +36,7 @@ const Chart = ({ chartCoin }) => {
         let url = `https://api.coingecko.com/api/v3/coins/${chartCoin}/ohlc?vs_currency=usd&days=1`;
         let response = await axios(url);
         setCandleData(formatResponseData(response.data));
+        setCoinName(chartCoin);
         //console.log(candleData);
       }
     };
@@ -48,11 +50,11 @@ const Chart = ({ chartCoin }) => {
       {chartCoin.length > 0 && <CanvasJSChart
         options={{
           legend: {
-            verticalAlign: "top"
+            verticalAlign: 'top'
           },
           axisY: {
             prefix: '$',
-            minimum: Math.min(...candleData.map(candle => candle.low)) / 1.1,
+            minimum: Math.min(...candleData.map(candle => candle.low)) / 1.05,
             crosshair: {
               enabled: true,
               snapToDataPoint: true
@@ -67,7 +69,7 @@ const Chart = ({ chartCoin }) => {
           data: [
             {
               showInLegend: true,
-              name: 'Stock Price in USD',
+              name: 'Coin Price in USD last 24hr',
               type: 'candlestick',
               //risingColor: 'green',
               //color: '#ff6666',

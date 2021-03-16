@@ -63,7 +63,7 @@ const CoinCard = ({ theme, coin }) => {
 
   const createLink = () => {
     const baseUrl = 'https://www.coingecko.com/en/coins/';
-    const coinName = coin.name.replace(/\s+/g, '-').toLowerCase();
+    const coinName = coin.name.replace(/\s+|\.+/g, '-').toLowerCase();
     return baseUrl + coinName;
   }
 
