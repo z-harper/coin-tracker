@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import TrendingCoins from './components/TrendingCoins';
 import Sidebar from './components/Sidebar';
 import Chart from './components/Chart';
+import Footer from './components/Footer';
 
 
 const ContentContainer = styled.div`
@@ -18,6 +19,7 @@ const ContentContainer = styled.div`
 
   @media screen and (max-width: 600px) {
     display: block;
+    min-height: auto;
   }
 `;
 
@@ -60,6 +62,8 @@ function App() {
   const [searchableCoins, setSearchableCoins] = useState([]);
   // value clicked from dropdown
   const [coinsClicked, setCoinsClicked] = useState([]);
+  // current coin that is being charted
+  const [chartCoin, setChartCoin] = useState('');
 
   // get coin name and symbol from fetchSearchableCoins
   const extractSearchableCoinNames = (coinData) => {
@@ -118,7 +122,6 @@ function App() {
     coin.price = response.current_price;
     coin.percentChange = response.price_change_percentage_24h;
     coin.image = response.image;
-
     // add coin to sidebar
     setCoinsClicked([...coinsClicked, coin]);
     // remove coin from searchable list
@@ -131,6 +134,13 @@ function App() {
     setSearchableCoins([...searchableCoins, { abbr: coinAbbr, id: coinID }]);
     // remove displayed coin from navbar
     setCoinsClicked(coinsClicked.filter(prev => prev.id !== coinID));
+    // remove coin from chart
+    setChartCoin('');
+  }
+
+  // current coin that is to be charted from click in sidebar
+  const coinToChart = (coinID) => {
+    setChartCoin(coinID);
   }
 
 
@@ -144,9 +154,11 @@ function App() {
           coinsClicked={coinsClicked}
           addCoin={addCoin}
           removeCoin={removeCoin}
+          coinToChart={coinToChart}
         />
-        <Chart />
+        <Chart chartCoin={chartCoin} />
       </ContentContainer>
+      <Footer theme={colorTheme} setColorTheme={setColorTheme} />
     </ThemeProvider>
   );
 }

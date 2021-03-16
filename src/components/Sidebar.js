@@ -89,7 +89,7 @@ const formatPrice = (price) => {
 }
 
 
-const Sidebar = ({ coins, coinsClicked, addCoin, removeCoin }) => {
+const Sidebar = ({ coins, coinsClicked, addCoin, removeCoin, coinToChart }) => {
 
   // dropdown open or closed
   const [open, setOpen] = useState(false);
@@ -161,7 +161,12 @@ const Sidebar = ({ coins, coinsClicked, addCoin, removeCoin }) => {
               <span>{coin.abbr}</span>
               <span style={{ textAlign: 'right' }}>{formatPrice(coin.price)}</span>
               <span style={{ color: coin.percentChange > 0 ? 'green' : 'red', textAlign: 'right' }}>{coin.percentChange.toFixed(2)}%</span>
-              <span style={{ cursor: 'pointer' }}>📈</span>
+              <span
+                style={{ cursor: 'pointer' }}
+                onClick={() => coinToChart(coin.id)}
+              >
+                📈
+              </span>
               <span
                 style={{ cursor: 'pointer' }}
                 onClick={() => removeCoin(coin.id, coin.abbr)}
